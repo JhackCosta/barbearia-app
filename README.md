@@ -35,7 +35,7 @@ Aplicativo mobile para gerenciamento de barbearia desenvolvido em React Native.
 
 ## Instalação
 
-\`\`\`bash
+```bash
 # Instalar dependências
 npm install
 
@@ -44,19 +44,19 @@ npm run bundle
 
 # Instalar no dispositivo Android
 npm run install
-\`\`\`
+```
 
 ## Scripts Disponíveis
 
-- \`npm run bundle\` - Gera o bundle JavaScript para Android
-- \`npm run install\` - Instala o APK debug no dispositivo
-- \`npm run build\` - Gera APK de produção (release)
-- \`npm run lint\` - Executa o ESLint
-- \`npm test\` - Executa os testes
+- `npm run bundle` - Gera o bundle JavaScript para Android
+- `npm run install` - Instala o APK debug no dispositivo
+- `npm run build` - Gera APK de produção (release)
+- `npm run lint` - Executa o ESLint
+- `npm test` - Executa os testes
 
 ## Estrutura do Projeto
 
-\`\`\`
+```
 src/
 ├── components/       # Componentes reutilizáveis
 ├── navigation/       # Configuração de navegação
@@ -70,7 +70,7 @@ src/
 ├── services/        # Serviços (notificações)
 ├── storage/         # Persistência de dados
 └── types/          # Tipos TypeScript
-\`\`\`
+```
 
 ## Desenvolvimento
 
