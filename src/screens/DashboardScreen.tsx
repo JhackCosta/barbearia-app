@@ -16,6 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import {RootStackParamList, Agendamento, VALORES_SERVICOS} from '../types';
 import {AgendamentoStorage} from '../storage';
+import {WhatsAppService} from '../services/WhatsAppService';
 
 type DashboardNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Dashboard'>;
 
@@ -56,7 +57,7 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
     }, [])
   );
 
-    const cancelarAgendamento = async (agendamentoId: string) => {
+    const cancelarAgendamento = async (agendamento: Agendamento) => {
     Alert.alert(
       'Confirmar Cancelamento',
       'Tem certeza que deseja cancelar este agendamento?',
@@ -67,9 +68,32 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
           style: 'destructive',
           onPress: async () => {
             try {
-              await AgendamentoStorage.cancelarAgendamento(agendamentoId);
-              Alert.alert('Sucesso', 'Agendamento cancelado!');
-              carregarAgendamentos();
+              await AgendamentoStorage.cancelarAgendamento(agendamento.id);
+
+              Alert.alert(
+                '✅ Cancelado',
+                'Deseja avisar o cliente por WhatsApp?',
+                [
+                  {
+                    text: 'Não',
+                    style: 'cancel',
+                    onPress: () => {
+                      Alert.alert('Sucesso', 'Agendamento cancelado!');
+                      carregarAgendamentos();
+                    }
+                  },
+                  {
+                    text: '📱 Avisar WhatsApp',
+                    onPress: async () => {
+                      await WhatsAppService.enviarAvisoCancelamento(
+                        agendamento.cliente,
+                        agendamento
+                      );
+                      carregarAgendamentos();
+                    }
+                  }
+                ]
+              );
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível cancelar o agendamento.');
             }
@@ -94,8 +118,31 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
                 agendamento.id,
                 valorPadrao,
               );
-              Alert.alert('Sucesso', 'Atendimento concluído!');
-              carregarAgendamentos();
+
+              Alert.alert(
+                '✅ Concluído',
+                'Deseja enviar agradecimento por WhatsApp?',
+                [
+                  {
+                    text: 'Não',
+                    style: 'cancel',
+                    onPress: () => {
+                      Alert.alert('Sucesso', 'Atendimento concluído!');
+                      carregarAgendamentos();
+                    }
+                  },
+                  {
+                    text: '📱 Enviar WhatsApp',
+                    onPress: async () => {
+                      await WhatsAppService.enviarAgradecimento(
+                        agendamento.cliente,
+                        agendamento
+                      );
+                      carregarAgendamentos();
+                    }
+                  }
+                ]
+              );
             } catch (error) {
               Alert.alert('Erro', 'Não foi possível concluir o atendimento.');
             }
@@ -148,11 +195,24 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
           </Button>
           <Button
             mode="outlined"
-            onPress={() => cancelarAgendamento(item.id)}
+            onPress={() => cancelarAgendamento(item)}
             textColor="#E74C3C"
             style={styles.removeButton}
           >
             Cancelar
+          </Button>
+        </View>
+
+        <Divider style={styles.divider} />
+
+        <View style={styles.whatsappActions}>
+          <Button
+            mode="text"
+            onPress={() => WhatsAppService.enviarLembrete24h(item.cliente, item)}
+            textColor="#25D366"
+            compact
+          >
+            📱 Enviar Lembrete
           </Button>
         </View>
       </Card.Content>
@@ -276,6 +336,10 @@ const styles = StyleSheet.create({
   removeButton: {
     flex: 1,
     borderColor: '#E74C3C',
+  },
+  whatsappActions: {
+    alignItems: 'center',
+    marginTop: 4,
   },
   fab: {
     position: 'absolute',

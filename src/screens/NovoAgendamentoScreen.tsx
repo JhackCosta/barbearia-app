@@ -16,6 +16,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList, Cliente, Agendamento, TipoServico, TIPOS_SERVICO } from '../types';
 import { ClienteStorage, AgendamentoStorage } from '../storage';
 import { NotificationService } from '../services/NotificationService';
+import { WhatsAppService } from '../services/WhatsAppService';
 
 type NovoAgendamentoNavigationProp = NativeStackNavigationProp<RootStackParamList, 'NovoAgendamento'>;
 
@@ -84,12 +85,23 @@ const NovoAgendamentoScreen: React.FC<Props> = ({ navigation }) => {
       NotificationService.agendarLembrete(novoAgendamento);
 
       Alert.alert(
-        'Sucesso',
-        'Agendamento criado com sucesso!\nLembrete será enviado 24h antes.',
+        '✅ Agendamento Criado',
+        'Deseja enviar confirmação por WhatsApp?',
         [
           {
-            text: 'OK',
+            text: 'Agora Não',
+            style: 'cancel',
             onPress: () => navigation.goBack()
+          },
+          {
+            text: '📱 Enviar WhatsApp',
+            onPress: async () => {
+              await WhatsAppService.enviarConfirmacaoAgendamento(
+                clienteSelecionado!,
+                novoAgendamento
+              );
+              navigation.goBack();
+            }
           }
         ]
       );
