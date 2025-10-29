@@ -2,17 +2,21 @@
 
 ## 🚨 Problemas Urgentes
 
-### 1. ❌ Notificações não funcionam
-- [ ] Debugar NotificationService
-- [ ] Testar permissões de notificação no Android
-- [ ] Verificar canal de notificações
-- [ ] Testar notificação de lembrete 24h antes
-- [ ] Adicionar logs para debug
+### 1. ✅ Notificações funcionando!
+- [x] Debugar NotificationService
+- [x] Testar permissões de notificação no Android
+- [x] Verificar canal de notificações
+- [x] Testar notificação de lembrete 24h antes
+- [x] Adicionar logs para debug
+- [x] Adicionar permissões SCHEDULE_EXACT_ALARM e USE_EXACT_ALARM
+- [x] Adicionar ícone de notificação (tesoura)
+- [x] Remover código de teste
 
-**Possíveis causas:**
-- Permissões não concedidas
-- Canal não criado corretamente
-- Serviço não inicializado
+**Soluções aplicadas:**
+- ✅ Permissões POST_NOTIFICATIONS, SCHEDULE_EXACT_ALARM, USE_EXACT_ALARM concedidas
+- ✅ Canal criado corretamente
+- ✅ Serviço inicializado no App.tsx
+- ✅ Ícone personalizado (tesoura de barbearia)
 
 ---
 
@@ -151,7 +155,7 @@ ios/BarbeariaApp/Images.xcassets/AppIcon.appiconset/
 
 ## 📝 Ordem de Prioridade
 
-1. **URGENTE** - Corrigir notificações (impacta uso diário)
+1. ~~**URGENTE** - Corrigir notificações~~ ✅ **CONCLUÍDO**
 2. **IMPORTANTE** - Clientes inativos (funcionalidade solicitada)
 3. **DESIGN** - Logo completa no header (melhora UX)
 4. **DESIGN** - Ícone do app (branding)
