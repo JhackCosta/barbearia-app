@@ -104,13 +104,22 @@ const ListaClientesScreen: React.FC<Props> = ({ navigation }) => {
             </Paragraph>
           </View>
 
-          <Button
-            mode="text"
-            textColor="#E74C3C"
-            onPress={() => removerCliente(item)}
-          >
-            🗑️
-          </Button>
+          <View style={styles.cardActions}>
+            <Button
+              mode="outlined"
+              onPress={() => navigation.navigate('EditarCliente', {clienteId: item.id})}
+              style={styles.editButton}
+            >
+              ✏️
+            </Button>
+            <Button
+              mode="text"
+              textColor="#E74C3C"
+              onPress={() => removerCliente(item)}
+            >
+              🗑️
+            </Button>
+          </View>
         </View>
       </Card.Content>
     </Card>
@@ -201,6 +210,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  cardActions: {
+    flexDirection: 'row',
+    gap: 4,
+    alignItems: 'center',
+  },
+  editButton: {
+    borderColor: '#6200EA',
   },
   clienteInfo: {
     flex: 1,

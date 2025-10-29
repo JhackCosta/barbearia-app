@@ -1,7 +1,71 @@
 import {Linking, Alert} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {Cliente, Agendamento} from '../types';
 
+const STORAGE_KEYS = {
+  MSG_CONFIRMACAO: '@config_msg_confirmacao',
+  MSG_LEMBRETE: '@config_msg_lembrete',
+  MSG_CANCELAMENTO: '@config_msg_cancelamento',
+  MSG_AGRADECIMENTO: '@config_msg_agradecimento',
+};
+
+const MENSAGENS_PADRAO = {
+  confirmacao: `Olá {nome}! ✂️
+
+Seu agendamento foi confirmado:
+📅 Data: {data}
+⏰ Horário: {hora}
+💈 Serviço: {servico}
+💰 Valor: R$ {valor}
+
+Nos vemos em breve! 😊`,
+
+  lembrete: `Olá {nome}! 🔔
+
+Lembrete: Amanhã você tem agendamento às {hora}!
+💈 {servico}
+
+Qualquer imprevisto, avise com antecedência! 😊`,
+
+  cancelamento: `Olá {nome},
+
+Seu agendamento foi cancelado:
+📅 {data} às {hora}
+💈 {servico}
+
+Para reagendar, entre em contato! 📞`,
+
+  agradecimento: `Olá {nome}! 😊
+
+Obrigado por escolher nossos serviços!
+Esperamos que tenha gostado do seu {servico}! ✨
+
+Até a próxima! 💈`,
+};
+
 export class WhatsAppService {
+  /**
+   * Substitui variáveis na mensagem template
+   */
+  private static substituirVariaveis(
+    template: string,
+    cliente: Cliente,
+    agendamento: Agendamento,
+  ): string {
+    const dataFormatada = agendamento.data.toLocaleDateString('pt-BR');
+    const horaFormatada = agendamento.data.toLocaleTimeString('pt-BR', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+
+    return template
+      .replace(/{nome}/g, cliente.nome)
+      .replace(/{data}/g, dataFormatada)
+      .replace(/{hora}/g, horaFormatada)
+      .replace(/{servico}/g, agendamento.servico)
+      .replace(/{valor}/g, agendamento.valorPago?.toFixed(2) || '0.00');
+  }
+
   /**
    * Envia mensagem de confirmação de agendamento
    */
@@ -9,21 +73,9 @@ export class WhatsAppService {
     cliente: Cliente,
     agendamento: Agendamento,
   ): Promise<void> {
+    const template = await AsyncStorage.getItem(STORAGE_KEYS.MSG_CONFIRMACAO) || MENSAGENS_PADRAO.confirmacao;
+    const mensagem = this.substituirVariaveis(template, cliente, agendamento);
     const telefone = this.formatarTelefone(cliente.telefone);
-    const dataFormatada = agendamento.data.toLocaleDateString('pt-BR');
-    const horaFormatada = agendamento.data.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    const mensagem =
-      `Olá ${cliente.nome}! ✂️\n\n` +
-      `Seu agendamento foi confirmado:\n` +
-      `📅 Data: ${dataFormatada}\n` +
-      `⏰ Horário: ${horaFormatada}\n` +
-      `💈 Serviço: ${agendamento.servico}\n` +
-      `💰 Valor: R$ ${agendamento.valorPago?.toFixed(2)}\n\n` +
-      `Nos vemos em breve! 😊`;
 
     await this.abrirWhatsApp(telefone, mensagem);
   }
@@ -35,17 +87,9 @@ export class WhatsAppService {
     cliente: Cliente,
     agendamento: Agendamento,
   ): Promise<void> {
+    const template = await AsyncStorage.getItem(STORAGE_KEYS.MSG_LEMBRETE) || MENSAGENS_PADRAO.lembrete;
+    const mensagem = this.substituirVariaveis(template, cliente, agendamento);
     const telefone = this.formatarTelefone(cliente.telefone);
-    const horaFormatada = agendamento.data.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    const mensagem =
-      `Olá ${cliente.nome}! 🔔\n\n` +
-      `Lembrete: Amanhã você tem agendamento às ${horaFormatada}!\n` +
-      `💈 ${agendamento.servico}\n\n` +
-      `Qualquer imprevisto, avise com antecedência! 😊`;
 
     await this.abrirWhatsApp(telefone, mensagem);
   }
@@ -57,19 +101,9 @@ export class WhatsAppService {
     cliente: Cliente,
     agendamento: Agendamento,
   ): Promise<void> {
+    const template = await AsyncStorage.getItem(STORAGE_KEYS.MSG_CANCELAMENTO) || MENSAGENS_PADRAO.cancelamento;
+    const mensagem = this.substituirVariaveis(template, cliente, agendamento);
     const telefone = this.formatarTelefone(cliente.telefone);
-    const dataFormatada = agendamento.data.toLocaleDateString('pt-BR');
-    const horaFormatada = agendamento.data.toLocaleTimeString('pt-BR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-
-    const mensagem =
-      `Olá ${cliente.nome},\n\n` +
-      `Seu agendamento foi cancelado:\n` +
-      `📅 ${dataFormatada} às ${horaFormatada}\n` +
-      `💈 ${agendamento.servico}\n\n` +
-      `Para reagendar, entre em contato! 📞`;
 
     await this.abrirWhatsApp(telefone, mensagem);
   }
@@ -81,13 +115,9 @@ export class WhatsAppService {
     cliente: Cliente,
     agendamento: Agendamento,
   ): Promise<void> {
+    const template = await AsyncStorage.getItem(STORAGE_KEYS.MSG_AGRADECIMENTO) || MENSAGENS_PADRAO.agradecimento;
+    const mensagem = this.substituirVariaveis(template, cliente, agendamento);
     const telefone = this.formatarTelefone(cliente.telefone);
-
-    const mensagem =
-      `Olá ${cliente.nome}! 😊\n\n` +
-      `Obrigado por escolher nossos serviços!\n` +
-      `Esperamos que tenha gostado do seu ${agendamento.servico.toLowerCase()}! ✨\n\n` +
-      `Até a próxima! 💈`;
 
     await this.abrirWhatsApp(telefone, mensagem);
   }

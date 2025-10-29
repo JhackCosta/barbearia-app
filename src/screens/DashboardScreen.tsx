@@ -245,6 +245,15 @@ const DashboardScreen: React.FC<Props> = ({ navigation }) => {
             Relatórios
           </Button>
         </View>
+        <View style={styles.buttonRow}>
+          <Button
+            mode="contained"
+            onPress={() => navigation.navigate('Configuracoes')}
+            style={styles.configButton}
+          >
+            ⚙️ Configurações
+          </Button>
+        </View>
       </Surface>
 
       {agendamentos.length === 0 && !loading ? (
@@ -292,6 +301,11 @@ const styles = StyleSheet.create({
   headerButton: {
     flex: 1,
     borderColor: '#6200EA',
+  },
+  configButton: {
+    flex: 1,
+    backgroundColor: '#6200EA',
+    marginTop: 8,
   },
   list: {
     padding: 16,

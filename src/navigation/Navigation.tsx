@@ -1,4 +1,5 @@
 import React from 'react';
+import { View, Image, StyleSheet, Dimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
@@ -9,9 +10,33 @@ import ListaClientesScreen from '../screens/ListaClientesScreen';
 import NovoAgendamentoScreen from '../screens/NovoAgendamentoScreen';
 import HistoricoScreen from '../screens/HistoricoScreen';
 import RelatoriosScreen from '../screens/RelatoriosScreen';
-import Logo from '../components/Logo';
+import ConfiguracoesScreen from '../screens/ConfiguracoesScreen';
+import EditarClienteScreen from '../screens/EditarClienteScreen';
+import ConfiguracoesPrecosScreen from '../screens/ConfiguracoesPrecosScreen';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const { width } = Dimensions.get('window');
+
+// Componente de Header com logo como capa
+const HeaderWithLogo = () => {
+  let logoSource;
+  try {
+    logoSource = require('../assets/images/logo-horizontal.png');
+  } catch {
+    logoSource = require('../assets/images/logo.jpeg');
+  }
+
+  return (
+    <View style={styles.headerContainer}>
+      <Image
+        source={logoSource}
+        style={styles.headerLogo}
+        resizeMode="cover"
+      />
+    </View>
+  );
+};
 
 const Navigation: React.FC = () => {
   return (
@@ -20,19 +45,18 @@ const Navigation: React.FC = () => {
         initialRouteName="Dashboard"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#6200EA',
+            backgroundColor: 'transparent',
           },
           headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
+          headerTransparent: false,
+          headerBackground: () => <HeaderWithLogo />,
         }}
       >
         <Stack.Screen
           name="Dashboard"
           component={DashboardScreen}
           options={{
-            headerTitle: () => <Logo size="small" />
+            headerTitle: '',
           }}
         />
         <Stack.Screen
@@ -60,9 +84,36 @@ const Navigation: React.FC = () => {
           component={RelatoriosScreen}
           options={{title: '📊 Relatórios'}}
         />
+        <Stack.Screen
+          name="Configuracoes"
+          component={ConfiguracoesScreen}
+          options={{title: '⚙️ Configurações'}}
+        />
+        <Stack.Screen
+          name="EditarCliente"
+          component={EditarClienteScreen}
+          options={{title: '✏️ Editar Cliente'}}
+        />
+        <Stack.Screen
+          name="ConfiguracoesPrecos"
+          component={ConfiguracoesPrecosScreen}
+          options={{title: '💰 Preços'}}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    width: '100%',
+    height: '100%',
+    overflow: 'hidden',
+  },
+  headerLogo: {
+    width: '100%',
+    height: '100%',
+  },
+});
 
 export default Navigation;

@@ -10,6 +10,7 @@ import {
   SegmentedButtons,
   DataTable,
   Button,
+  Switch,
 } from 'react-native-paper';
 import {useFocusEffect} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
@@ -167,17 +168,19 @@ const RelatoriosScreen: React.FC<Props> = ({navigation}) => {
         />
 
         <View style={styles.toggleContainer}>
-          <Text variant="bodyMedium" style={styles.toggleLabel}>
-            🔮 Incluir lançamentos futuros
-          </Text>
-          <Button
-            mode={incluirFuturos ? 'contained' : 'outlined'}
-            onPress={() => setIncluirFuturos(!incluirFuturos)}
-            compact
-            style={styles.toggleButton}
-          >
-            {incluirFuturos ? 'Sim' : 'Não'}
-          </Button>
+          <View style={styles.toggleTextContainer}>
+            <Text variant="bodyMedium" style={styles.toggleLabel}>
+              🔮 Incluir lançamentos futuros
+            </Text>
+            <Text variant="bodySmall" style={styles.toggleValue}>
+              {incluirFuturos ? 'Sim' : 'Não'}
+            </Text>
+          </View>
+          <Switch
+            value={incluirFuturos}
+            onValueChange={setIncluirFuturos}
+            color="#6200EA"
+          />
         </View>
       </Surface>
 
@@ -377,9 +380,18 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#E0E0E0',
   },
+  toggleTextContainer: {
+    flex: 1,
+  },
   toggleLabel: {
     color: '#2C3E50',
     fontWeight: '500',
+  },
+  toggleValue: {
+    color: '#6200EA',
+    fontWeight: 'bold',
+    marginTop: 4,
+    fontSize: 12,
   },
   toggleButton: {
     minWidth: 60,

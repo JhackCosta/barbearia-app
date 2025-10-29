@@ -44,8 +44,11 @@ export type RootStackParamList = {
   ListaClientes: undefined;
   NovoAgendamento: undefined;
   EditarAgendamento: {agendamentoId: string};
+  EditarCliente: {clienteId: string};
   Historico: undefined;
   Relatorios: undefined;
+  Configuracoes: undefined;
+  ConfiguracoesPrecos: undefined;
 };
 
 // Tipos para relatórios
