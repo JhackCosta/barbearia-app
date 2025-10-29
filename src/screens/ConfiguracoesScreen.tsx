@@ -28,6 +28,7 @@ const STORAGE_KEYS = {
   MSG_LEMBRETE: '@config_msg_lembrete',
   MSG_CANCELAMENTO: '@config_msg_cancelamento',
   MSG_AGRADECIMENTO: '@config_msg_agradecimento',
+  MSG_RETORNO: '@config_msg_retorno',
 };
 
 const MENSAGENS_PADRAO = {
@@ -62,6 +63,13 @@ Obrigado por escolher nossos serviços!
 Esperamos que tenha gostado do seu {servico}! ✨
 
 Até a próxima! 💈`,
+
+  retorno: `Olá {nome}! 👋
+
+Sentimos sua falta! 😊
+Que tal agendar um horário? Estamos esperando por você! 💈✂️
+
+Entre em contato para marcar seu horário! 📅`,
 };
 
 const ConfiguracoesScreen: React.FC<Props> = ({navigation}) => {
@@ -69,6 +77,7 @@ const ConfiguracoesScreen: React.FC<Props> = ({navigation}) => {
   const [msgLembrete, setMsgLembrete] = useState(MENSAGENS_PADRAO.lembrete);
   const [msgCancelamento, setMsgCancelamento] = useState(MENSAGENS_PADRAO.cancelamento);
   const [msgAgradecimento, setMsgAgradecimento] = useState(MENSAGENS_PADRAO.agradecimento);
+  const [msgRetorno, setMsgRetorno] = useState(MENSAGENS_PADRAO.retorno);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -77,17 +86,19 @@ const ConfiguracoesScreen: React.FC<Props> = ({navigation}) => {
 
   const carregarConfiguracoes = async () => {
     try {
-      const [confirmacao, lembrete, cancelamento, agradecimento] = await Promise.all([
+      const [confirmacao, lembrete, cancelamento, agradecimento, retorno] = await Promise.all([
         AsyncStorage.getItem(STORAGE_KEYS.MSG_CONFIRMACAO),
         AsyncStorage.getItem(STORAGE_KEYS.MSG_LEMBRETE),
         AsyncStorage.getItem(STORAGE_KEYS.MSG_CANCELAMENTO),
         AsyncStorage.getItem(STORAGE_KEYS.MSG_AGRADECIMENTO),
+        AsyncStorage.getItem(STORAGE_KEYS.MSG_RETORNO),
       ]);
 
       if (confirmacao) setMsgConfirmacao(confirmacao);
       if (lembrete) setMsgLembrete(lembrete);
       if (cancelamento) setMsgCancelamento(cancelamento);
       if (agradecimento) setMsgAgradecimento(agradecimento);
+      if (retorno) setMsgRetorno(retorno);
     } catch (error) {
       console.error('Erro ao carregar configurações:', error);
     } finally {
@@ -102,6 +113,7 @@ const ConfiguracoesScreen: React.FC<Props> = ({navigation}) => {
         AsyncStorage.setItem(STORAGE_KEYS.MSG_LEMBRETE, msgLembrete),
         AsyncStorage.setItem(STORAGE_KEYS.MSG_CANCELAMENTO, msgCancelamento),
         AsyncStorage.setItem(STORAGE_KEYS.MSG_AGRADECIMENTO, msgAgradecimento),
+        AsyncStorage.setItem(STORAGE_KEYS.MSG_RETORNO, msgRetorno),
       ]);
 
       Alert.alert('✅ Sucesso', 'Configurações salvas com sucesso!');
@@ -124,6 +136,7 @@ const ConfiguracoesScreen: React.FC<Props> = ({navigation}) => {
             setMsgLembrete(MENSAGENS_PADRAO.lembrete);
             setMsgCancelamento(MENSAGENS_PADRAO.cancelamento);
             setMsgAgradecimento(MENSAGENS_PADRAO.agradecimento);
+            setMsgRetorno(MENSAGENS_PADRAO.retorno);
           },
         },
       ],
@@ -263,6 +276,27 @@ const ConfiguracoesScreen: React.FC<Props> = ({navigation}) => {
               onChangeText={setMsgAgradecimento}
               style={styles.input}
             />
+          </Card.Content>
+        </Card>
+
+        <Card style={styles.card}>
+          <Card.Content>
+            <Title>👋 Retorno (Clientes Inativos)</Title>
+            <Text style={styles.description}>
+              Enviada para clientes que não cortam há 30+ dias
+            </Text>
+            <TextInput
+              mode="outlined"
+              multiline
+              numberOfLines={6}
+              value={msgRetorno}
+              onChangeText={setMsgRetorno}
+              style={styles.input}
+              placeholder="Apenas {nome} está disponível"
+            />
+            <Text style={styles.infoText}>
+              💡 Variável disponível: {'{nome}'}
+            </Text>
           </Card.Content>
         </Card>
 

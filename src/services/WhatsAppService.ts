@@ -7,6 +7,7 @@ const STORAGE_KEYS = {
   MSG_LEMBRETE: '@config_msg_lembrete',
   MSG_CANCELAMENTO: '@config_msg_cancelamento',
   MSG_AGRADECIMENTO: '@config_msg_agradecimento',
+  MSG_RETORNO: '@config_msg_retorno',
 };
 
 const MENSAGENS_PADRAO = {
@@ -41,6 +42,13 @@ Obrigado por escolher nossos serviços!
 Esperamos que tenha gostado do seu {servico}! ✨
 
 Até a próxima! 💈`,
+
+  retorno: `Olá {nome}! 👋
+
+Sentimos sua falta! 😊
+Que tal agendar um horário? Estamos esperando por você! 💈✂️
+
+Entre em contato para marcar seu horário! 📅`,
 };
 
 export class WhatsAppService {
@@ -117,6 +125,17 @@ export class WhatsAppService {
   ): Promise<void> {
     const template = await AsyncStorage.getItem(STORAGE_KEYS.MSG_AGRADECIMENTO) || MENSAGENS_PADRAO.agradecimento;
     const mensagem = this.substituirVariaveis(template, cliente, agendamento);
+    const telefone = this.formatarTelefone(cliente.telefone);
+
+    await this.abrirWhatsApp(telefone, mensagem);
+  }
+
+  /**
+   * Envia mensagem para cliente inativo
+   */
+  static async enviarMensagemRetorno(cliente: Cliente): Promise<void> {
+    const template = await AsyncStorage.getItem(STORAGE_KEYS.MSG_RETORNO) || MENSAGENS_PADRAO.retorno;
+    const mensagem = template.replace(/{nome}/g, cliente.nome);
     const telefone = this.formatarTelefone(cliente.telefone);
 
     await this.abrirWhatsApp(telefone, mensagem);
